@@ -509,7 +509,7 @@ public class PlayerManager
 		{
 			//用户强制退出游戏，需要发送退出游戏消息给游戏服务器
 			
-		}else if (session.getAttribute("role_id") == null)
+		}else if (session.getAttribute("player_id") == null)
 		{
 			GateServer.getInstance().registerRole(session, playerId);
 		}
@@ -521,7 +521,7 @@ public class PlayerManager
 	 */
 	public void removePlayer(long playerId)
 	{
-		Player player = players.get(playerId);
+		Player player = players.remove(playerId);
 		if (player != null)
 		{
 			//移除User_Player的缓存
@@ -588,8 +588,8 @@ public class PlayerManager
 		int serverId = player.getCreateServer();
 		
 		ResPlayerQuitMessage msg = new ResPlayerQuitMessage();
-		msg.bIsForced = 0;
-		msg.userId = player.getId();
+		msg.bIsForced = bForced ? 1 : 0;
+		msg.getRoleId().add(player.getId());
 		int sessionId = 0;
 		IoSession session = GateServer.getInstance().getSessionByUser(serverId, userId);
 		if (session != null)

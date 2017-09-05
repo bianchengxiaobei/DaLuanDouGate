@@ -383,7 +383,7 @@ public class GateServer extends MinaServer
 		}
 	}
 	/**
-	 * 注册角色到角色Map中，并设置Session的“role_id”属性
+	 * 注册角色到角色Map中，并设置Session的“player_id”属性
 	 * @param session
 	 * @param roleId
 	 */
@@ -391,7 +391,7 @@ public class GateServer extends MinaServer
 	{
 		synchronized (player_session)
 		{
-			session.setAttribute("role_id",roleId);
+			session.setAttribute("player_id",roleId);
 			player_session.put(roleId, session);
 		}
 	}
@@ -483,7 +483,7 @@ public class GateServer extends MinaServer
 				{
 					//取出消息
 					Message msg = messagePool.getMessage(id);
-					log.debug("收到消息id："+msg.getId()+"-->"+msg.getClass().getSimpleName());
+					//log.debug("收到消息id："+msg.getId()+"-->"+msg.getClass().getSimpleName());
 					msg.read(buf);
 					msg.setSession(session);
 					handler.setMessage(msg);
@@ -491,7 +491,7 @@ public class GateServer extends MinaServer
 					actionExecutor.execute(handler);//执行消息，调用Handler的action方法
 				}else
 				{
-					Object roleId = session.getAttribute("role_id");
+					Object roleId = session.getAttribute("player_id");
 					if (roleId == null)
 					{
 						log.error("session:"+session+"没有绑定角色");
@@ -549,7 +549,7 @@ public class GateServer extends MinaServer
 			try 
 			{
 				int id = buf.getInt();//消息id
-				log.info("网关内部连接服务器收到消息id："+id);
+				//log.info("网关内部连接服务器收到消息id："+id);
 				long sendId = buf.getLong();
 				int roleNum = buf.getInt();//角色数量
 				List<Long> roles = new ArrayList<Long>();

@@ -5,10 +5,12 @@ import java.util.HashMap;
 import com.chen.command.Handler;
 import com.chen.login.handler.ReqCreateCharacterHandler;
 import com.chen.login.handler.ReqLoginHandler;
+import com.chen.login.handler.ReqRemoveCharacterToGateHandler;
 import com.chen.login.handler.ReqSelectCharacterHandler;
 import com.chen.login.handler.ResLoginSuccessToGateHandler;
 import com.chen.login.message.req.ReqCreateCharacterMessage;
 import com.chen.login.message.req.ReqLoginMessage;
+import com.chen.login.message.req.ReqRemoveCharacterToGateMessage;
 import com.chen.login.message.req.ReqSelectCharacterMessage;
 import com.chen.login.message.res.ResLoginSuccessToGateMessage;
 import com.chen.message.Message;
@@ -23,7 +25,8 @@ public class MessagePool
 	{
 		register(10003, ReqRegisterGateMessage.class,ReqRegisterGateHandler.class);
 		register(10008, ResLoginSuccessToGateMessage.class, ResLoginSuccessToGateHandler.class);
-	
+		register(10036, ReqRemoveCharacterToGateMessage.class, ReqRemoveCharacterToGateHandler.class);
+		
 		register(1001, ReqLoginMessage.class, ReqLoginHandler.class);
 		register(1004, ReqCreateCharacterMessage.class, ReqCreateCharacterHandler.class);
 		register(1006, ReqSelectCharacterMessage.class, ReqSelectCharacterHandler.class);

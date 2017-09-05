@@ -10,16 +10,15 @@ import com.chen.message.Message;
  */
 public class ResPlayerQuitMessage extends Message
 {
-	public long userId;
-	public byte bIsForced;
+	public int bIsForced;
 	@Override
 	public int getId() {
-		return 1032;
+		return 10035;
 	}
 
 	@Override
 	public String getQueue() {
-		return "Local";
+		return null;
 	}
 
 	@Override
@@ -29,15 +28,13 @@ public class ResPlayerQuitMessage extends Message
 
 	@Override
 	public boolean read(IoBuffer buffer) {
-		this.userId = readLong(buffer);
-		this.bIsForced = readByte(buffer);
+		this.bIsForced = readInt(buffer);
 		return true;
 	}
 
 	@Override
 	public boolean write(IoBuffer buffer) {
-		writeLong(buffer, userId);
-		writeByte(buffer, bIsForced);
+		writeInt(buffer, bIsForced);		
 		return true;
 	}
 
