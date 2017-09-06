@@ -204,11 +204,6 @@ public class GateServer extends MinaServer
 		
 	}
 	@Override
-	public void sessionIdle(IoSession session, IdleStatus arg1) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
 	public void sessionOpened(IoSession session) {
 		// TODO Auto-generated method stub
 		
@@ -310,6 +305,11 @@ public class GateServer extends MinaServer
 				}
 			}
 		}
+	}
+	@Override
+	public void sessionIdle(IoSession iosession, IdleStatus idlestatus) 
+	{
+		log.debug("进入Idle");
 	}
 	@Override
 	protected void stop() {
