@@ -41,6 +41,7 @@ public class GateServer extends MinaServer
 	private static final String defaultInnerServerConfig = "gate-config/Inner-server-config.xml";
 	private static final String defaultGameConfig = "gate-config/game-config.xml";
 	private static GameConfig config;
+	public static int MAX_SESSION = 20000;
 	private static Object obj = new Object();
 	//玩家通信列表
 	private static ConcurrentHashMap<String, IoSession> user_session = new ConcurrentHashMap<String, IoSession>();
@@ -177,10 +178,10 @@ public class GateServer extends MinaServer
 								&& !ioSession
 										.containsAttribute("user_id")) {
 							SessionUtil.closeSession(ioSession, "10秒内没有发送登陆信息");
-						} else if (acceptor.getManagedSessionCount() > 5000
+						} else if (acceptor.getManagedSessionCount() > 0
 								&& ioSession.containsAttribute("pre_heart")) {
 							long pre = (Long) ioSession.getAttribute("pre_heart");
-							if (now - pre > 5 * 60 * 1000) {
+							if (now - pre > 20 * 1000) {
 								SessionUtil.closeSession(ioSession,
 										"5分钟内没有发送心跳信息");
 							}
@@ -204,9 +205,17 @@ public class GateServer extends MinaServer
 		
 	}
 	@Override
-	public void sessionOpened(IoSession session) {
-		// TODO Auto-generated method stub
-		
+	public void sessionOpened(IoSession session) 
+	{
+		log.debug(session+"Session打开，总数："+acceptor.getManagedSessionCount());
+		if(acceptor.getManagedSessionCount() > MAX_SESSION)
+		{
+			SessionUtil.closeSession(session, "连接数过多(" + acceptor.getManagedSessionCount() + ")");
+		}
+		if (!session.containsAttribute("pre_heart"))
+		{
+			session.setAttribute("pre_heart", System.currentTimeMillis());
+		}
 	}
 	@Override
 	public void doCommand(IoSession session, IoBuffer buf) 
@@ -221,11 +230,11 @@ public class GateServer extends MinaServer
 			int id = buf.getInt();//消息id
 			System.out.println("收到消息id："+id);
 			long sessionId = session.getId();//客户端的通信id
-			if (id == 1002)
+			if (id == 1001)
 			{
 				log.debug("客户端："+session+"收到登陆消息，时间为："+System.currentTimeMillis());
 			}
-			if (id != 1001 && !session.containsAttribute("user_id"))
+			if (id != 1001 && id != 0 && !session.containsAttribute("user_id"))
 			{
 				SessionUtil.closeSession(session, "没有发送登陆消息");
 				return;

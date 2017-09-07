@@ -14,7 +14,9 @@ import com.chen.login.message.req.ReqRemoveCharacterToGateMessage;
 import com.chen.login.message.req.ReqSelectCharacterMessage;
 import com.chen.login.message.res.ResLoginSuccessToGateMessage;
 import com.chen.message.Message;
+import com.chen.server.handler.ReqHeartHandler;
 import com.chen.server.handler.ReqRegisterGateHandler;
+import com.chen.server.message.req.ReqHeartMessage;
 import com.chen.server.message.req.ReqRegisterGateMessage;
 
 public class MessagePool 
@@ -27,6 +29,7 @@ public class MessagePool
 		register(10008, ResLoginSuccessToGateMessage.class, ResLoginSuccessToGateHandler.class);
 		register(10036, ReqRemoveCharacterToGateMessage.class, ReqRemoveCharacterToGateHandler.class);
 		
+		register(0, ReqHeartMessage.class, ReqHeartHandler.class);
 		register(1001, ReqLoginMessage.class, ReqLoginHandler.class);
 		register(1004, ReqCreateCharacterMessage.class, ReqCreateCharacterHandler.class);
 		register(1006, ReqSelectCharacterMessage.class, ReqSelectCharacterHandler.class);
