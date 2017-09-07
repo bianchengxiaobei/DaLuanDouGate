@@ -218,6 +218,7 @@ public class PlayerManager
 						int state = removeUserState(createServer, userId);
 					}
 					//通知游戏服务器登陆角色
+					log.debug("重连选择角色");
 					selectCharacter(session, player.getId());
 					return;
 				}
@@ -508,10 +509,24 @@ public class PlayerManager
 		if (session == null || !session.isConnected())
 		{
 			//用户强制退出游戏，需要发送退出游戏消息给游戏服务器
+			quit(player, true);
+			return;
 			
-		}else if (session.getAttribute("player_id") == null)
+		}
+		else if (session.getAttribute("player_id") == null)
 		{
 			GateServer.getInstance().registerRole(session, playerId);
+		}
+		ConcurrentHashMap<String, Player> sPlayers = user_players.get(createServer);
+		if (sPlayers == null)
+		{
+			sPlayers = new ConcurrentHashMap<>();
+			user_players.put(createServer, sPlayers);
+		}
+		sPlayers.put(userId, player);
+		synchronized (user_states)
+		{
+			int state = removeUserState(createServer, userId);
 		}
 	}
 	/**
