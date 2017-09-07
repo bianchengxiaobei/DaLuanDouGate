@@ -183,7 +183,7 @@ public class GateServer extends MinaServer
 							long pre = (Long) ioSession.getAttribute("pre_heart");
 							if (now - pre > 20 * 1000) {
 								SessionUtil.closeSession(ioSession,
-										"5分钟内没有发送心跳信息");
+										"20妙内没有发送心跳信息");
 							}
 						}
 					}
