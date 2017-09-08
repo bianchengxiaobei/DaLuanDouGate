@@ -228,7 +228,7 @@ public class GateServer extends MinaServer
 				return;
 			}
 			int id = buf.getInt();//消息id
-			System.out.println("收到消息id："+id);
+			//System.out.println("收到消息id："+id);
 			long sessionId = session.getId();//客户端的通信id
 			if (id == 1001)
 			{
@@ -333,11 +333,8 @@ public class GateServer extends MinaServer
 	 */
 	public IoSession getSessionByUser(int server, String userId)
 	{
-		System.out.println(userId);
-		System.out.println(user_session.keys().toString());
 		if (user_session.containsKey(userId))
 		{
-			System.out.println("Contain User");
 			return user_session.get(userId);
 		}
 		return null;

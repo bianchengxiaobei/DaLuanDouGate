@@ -7,11 +7,13 @@ import com.chen.login.handler.ReqCreateCharacterHandler;
 import com.chen.login.handler.ReqLoginHandler;
 import com.chen.login.handler.ReqRemoveCharacterToGateHandler;
 import com.chen.login.handler.ReqSelectCharacterHandler;
+import com.chen.login.handler.ResEnterLobbyHandler;
 import com.chen.login.handler.ResLoginSuccessToGateHandler;
 import com.chen.login.message.req.ReqCreateCharacterMessage;
 import com.chen.login.message.req.ReqLoginMessage;
 import com.chen.login.message.req.ReqRemoveCharacterToGateMessage;
 import com.chen.login.message.req.ReqSelectCharacterMessage;
+import com.chen.login.message.res.ResEnterLobbyMessage;
 import com.chen.login.message.res.ResLoginSuccessToGateMessage;
 import com.chen.message.Message;
 import com.chen.server.handler.ReqHeartHandler;
@@ -28,10 +30,12 @@ public class MessagePool
 		register(10003, ReqRegisterGateMessage.class,ReqRegisterGateHandler.class);
 		register(10008, ResLoginSuccessToGateMessage.class, ResLoginSuccessToGateHandler.class);
 		register(10036, ReqRemoveCharacterToGateMessage.class, ReqRemoveCharacterToGateHandler.class);
+		register(10005, ResEnterLobbyMessage.class, ResEnterLobbyHandler.class);
 		
 		register(0, ReqHeartMessage.class, ReqHeartHandler.class);
 		register(1001, ReqLoginMessage.class, ReqLoginHandler.class);
 		register(1004, ReqCreateCharacterMessage.class, ReqCreateCharacterHandler.class);
+
 		register(1006, ReqSelectCharacterMessage.class, ReqSelectCharacterHandler.class);
 	}
 	private void register(int id,Class<?> messageClass,Class<?> handlerClass)

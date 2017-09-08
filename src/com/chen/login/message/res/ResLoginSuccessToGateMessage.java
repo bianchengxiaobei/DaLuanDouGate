@@ -15,8 +15,7 @@ public class ResLoginSuccessToGateMessage extends Message
 	private int createServerId;
 	private String userId;
 	private long playerId;
-	private RoleAllInfo roleAllInfo;
-	public int mapId;
+	public int isInBattle;
 	public int getServerId() {
 		return serverId;
 	}
@@ -73,8 +72,7 @@ public class ResLoginSuccessToGateMessage extends Message
 		this.createServerId = readInt(buf);
 		this.userId = readString(buf);
 		this.playerId = readLong(buf);
-		this.roleAllInfo = (RoleAllInfo) readBean(buf, RoleAllInfo.class);
-		this.mapId = readInt(buf);
+		this.isInBattle = readInt(buf);
 		return true;
 	}
 
@@ -85,17 +83,7 @@ public class ResLoginSuccessToGateMessage extends Message
 		writeInt(buf, createServerId);
 		writeString(buf, userId);
 		writeLong(buf, playerId);
-		writeBean(buf, this.roleAllInfo);
-		writeInt(buf, mapId);
+		writeInt(buf, isInBattle);
 		return true;
 	}
-
-	public RoleAllInfo getRoleAllInfo() {
-		return roleAllInfo;
-	}
-
-	public void setRoleAllInfo(RoleAllInfo roleAllInfo) {
-		this.roleAllInfo = roleAllInfo;
-	}
-
 }

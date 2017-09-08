@@ -136,6 +136,10 @@ public class MessageUtil
 		{
 			writeToPlayer(session, msg);
 		}
+		else
+		{
+			log.error("网关服务器没有注册角色Id："+roleId);
+		}
 	}
 	/**
 	 * 写入到游戏服务器缓存

@@ -11,7 +11,7 @@ public class ReqHeartHandler extends Handler
 		try 
 		{
 			ReqHeartMessage message = (ReqHeartMessage)getMessage();
-			System.out.println("处理心跳");
+			//System.out.println("处理心跳");
 			message.getSession().setAttribute("pre_heart",this.getCreateTime());
 		} catch (Exception e) 
 		{
