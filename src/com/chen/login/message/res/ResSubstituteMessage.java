@@ -14,7 +14,7 @@ public class ResSubstituteMessage extends Message
 	private String ip;
 	@Override
 	public int getId() {	
-		return 1001;
+		return 1039;
 	}
 
 	@Override

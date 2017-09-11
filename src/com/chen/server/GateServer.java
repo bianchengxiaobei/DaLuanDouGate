@@ -77,17 +77,6 @@ public class GateServer extends MinaServer
 		}
 		return server;
 	}
-	public static GateServer getInstance(String minaServerConfig,String innerServerConfig,String gameConfig)
-	{
-		synchronized (obj)
-		{
-			if (server == null)
-			{
-				server = new GateServer(minaServerConfig,innerServerConfig, gameConfig);
-			}
-		}
-		return server;
-	}
 	@Override
 	public void run()
 	{
@@ -291,6 +280,7 @@ public class GateServer extends MinaServer
 				}
 				else
 				{
+					log.debug("玩家开始退出游戏");
 					PlayerManager.getInstance().quit(player, true);
 					quit = true;					
 					IoSession ioSession = player_session.get(roleId);
