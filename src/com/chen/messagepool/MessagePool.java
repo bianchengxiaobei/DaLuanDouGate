@@ -2,6 +2,9 @@ package com.chen.messagepool;
 
 import java.util.HashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.chen.command.Handler;
 import com.chen.login.handler.ReqCreateCharacterHandler;
 import com.chen.login.handler.ReqLoginHandler;
@@ -23,6 +26,7 @@ import com.chen.server.message.req.ReqRegisterGateMessage;
 
 public class MessagePool 
 {
+	public Logger logger = LogManager.getLogger(MessagePool.class);
 	HashMap<Integer, Class<?>> messages = new HashMap<Integer, Class<?>>();
 	HashMap<Integer, Class<?>> handlers = new HashMap<Integer, Class<?>>();
 	public MessagePool()
@@ -50,6 +54,7 @@ public class MessagePool
 	{
 		if (!messages.containsKey(id))
 		{
+			logger.error("找不到注册的消息："+id);
 			return null;
 		}
 		else

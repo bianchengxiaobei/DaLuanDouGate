@@ -43,14 +43,18 @@ public class GateServer extends MinaServer
 	private static GameConfig config;
 	public static int MAX_SESSION = 20000;
 	private static Object obj = new Object();
-	//玩家通信列表
+	//玩家客户端通信列表，存的是网关与客户端的session
 	private static ConcurrentHashMap<String, IoSession> user_session = new ConcurrentHashMap<String, IoSession>();
-	//角色通信列表
+	//角色通信列表，存的是网关与客户端的session
 	private static ConcurrentHashMap<Long, IoSession> player_session = new ConcurrentHashMap<Long, IoSession>();
+	//游戏服务器通信列表，存的是网关与游戏服务器的session
 	private static ConcurrentHashMap<Integer,List<IoSession>> gameSessions = new ConcurrentHashMap<Integer, List<IoSession>>();
 	private static MessagePool messagePool = new MessagePool();
+	//消息执行线程池
 	private NonOrderedQueuePoolExecutor actionExecutor = new NonOrderedQueuePoolExecutor(500);
+	//接受消息线程池
 	private OrderedQueuePoolExecutor recvExecutor = new OrderedQueuePoolExecutor("消息接收队列",100,10000);
+	//发送消息线程池
 	private OrderedQueuePoolExecutor sendExecutor = new OrderedQueuePoolExecutor("消息发送队列", 100,-1);
 	private static GateServer server;
 	//private static ClientServer clientServer = null;
@@ -82,9 +86,10 @@ public class GateServer extends MinaServer
 	{
 		//long begin = System.currentTimeMillis();
 		super.run();
+		//连接clientServer
 		new Thread(innerServer).start();
 		try {
-			//外网消息定时发送
+			//外网消息定时发送，将客户端发给网关转发给游戏服务器
 			new Timer("Send-Timer").schedule(new TimerTask() {
 				@Override
 				public void run() {
@@ -114,7 +119,7 @@ public class GateServer extends MinaServer
 				}
 			}, 1, 1);
 
-			//内网消息定时发送
+			//内网消息定时发送，将游戏服务器发给网关转发给客户端
 			new Timer("Inner-Send-Timer").schedule(new TimerTask(){
 				@Override
 				public void run() {
@@ -219,10 +224,12 @@ public class GateServer extends MinaServer
 			int id = buf.getInt();//消息id
 			//System.out.println("收到消息id："+id);
 			long sessionId = session.getId();//客户端的通信id
+			//登录消息
 			if (id == 1001)
 			{
 				log.debug("客户端："+session+"收到登陆消息，时间为："+System.currentTimeMillis());
 			}
+			//还没有登录就通信
 			if (id != 1001 && id != 0 && !session.containsAttribute("user_id"))
 			{
 				SessionUtil.closeSession(session, "没有发送登陆消息");
@@ -392,7 +399,7 @@ public class GateServer extends MinaServer
 		}
 	}
 	/**
-	 * 网关注册游戏服务器
+	 * 网关注册与游戏服务器通信的Session
 	 * @param id
 	 * @param session
 	 */
@@ -412,23 +419,10 @@ public class GateServer extends MinaServer
 				gameSessions.put(id, sessions);
 				sessions.add(session);
 			}
-			System.out.println(gameSessions.get(id).get(0).getId());
+			log.debug("网关注册游戏服务器Session,Id："+id);
 		}
 	}
-	/*public synchronized void removeGameServer(int id,IoSession session)
-	{
-		synchronized (gameSessions)
-		{
-			List<IoSession> sessions = gameSessions.get(id);
-			if (sessions == null)
-			{
-				sessions = new ArrayList<IoSession>();
-				gameSessions.put(id, sessions);
-			}
-			sessions.add(session);
-		}
-	}
-	*/
+	
 	public static GameConfig getConfig() {
 		return config;
 	}
@@ -445,7 +439,7 @@ public class GateServer extends MinaServer
 		return gameSessions.get(server);
 	}
 	/**
-	 * 游戏服务器移除
+	 * 游戏服务器移除出网关缓存
 	 * @param id
 	 * @param session
 	 */
@@ -479,18 +473,24 @@ public class GateServer extends MinaServer
 				{
 					//取出消息
 					Message msg = messagePool.getMessage(id);
+					if (msg == null)
+					{
+						return;
+					}
 					//log.debug("收到消息id："+msg.getId()+"-->"+msg.getClass().getSimpleName());
 					msg.read(buf);
 					msg.setSession(session);
 					handler.setMessage(msg);
 					handler.setCreateTime(System.currentTimeMillis());
 					actionExecutor.execute(handler);//执行消息，调用Handler的action方法
-				}else
+				}
+				else
 				{
+					//说明是发给游戏服务器的
 					Object roleId = session.getAttribute("player_id");
 					if (roleId == null)
 					{
-						log.error("session:"+session+"没有绑定角色");
+						log.error("客户端session:"+session+"，服务器里面还没有绑定角色");
 						return ;
 					}
 					long playerId = (Long)roleId;
@@ -502,7 +502,7 @@ public class GateServer extends MinaServer
 					Player player = PlayerManager.getInstance().getPlayer(playerId);
 					if (player == null)
 					{
-						log.error("角色"+playerId+"未注册");
+						log.error("角色:"+playerId+"未注册");
 						return;
 					}
 					int sessionId = (Integer)session.getAttribute("session_id");
@@ -514,7 +514,11 @@ public class GateServer extends MinaServer
 			
 		}
 	}
-	
+	/**
+	 * 连接ClientServer的内部服务器
+	 * @author Administrator
+	 *
+	 */
 	private class InnerConnectServer extends InnerServer
 	{
 		protected InnerConnectServer(String serverConfig)
@@ -523,20 +527,21 @@ public class GateServer extends MinaServer
 		}
 
 		@Override
-		public void sessionCreate(IoSession session) {
+		public void sessionCreate(IoSession session) 
+		{
 			
 		}
 
 		@Override
-		public void sessionIdle(IoSession session, IdleStatus status) {
-			// TODO Auto-generated method stub
+		public void sessionIdle(IoSession session, IdleStatus status)
+		{
 			
 		}
 
 		@Override
-		public void sessionOpened(IoSession session) {
-			// TODO Auto-generated method stub
-			
+		public void sessionOpened(IoSession session) 
+		{
+				
 		}
 
 		@Override
@@ -557,6 +562,10 @@ public class GateServer extends MinaServer
 				if (handler != null)
 				{
 					Message msg = messagePool.getMessage(id);
+					if (msg == null)
+					{
+						return;
+					}
 					msg.read(buf);
 					msg.setSession(session);
 					handler.setMessage(msg);
@@ -564,6 +573,7 @@ public class GateServer extends MinaServer
 				}
 				else
 				{
+					//说明是直接发给客户端的
 					TransfersMessage msg = new TransfersMessage();
 					msg.setId(id);
 					msg.setBytes(new byte[buf.remaining()]);
@@ -579,12 +589,13 @@ public class GateServer extends MinaServer
 		@Override
 		public void exceptionCaught(IoSession session, Throwable cause) 
 		{
-			innerCloselog.error("InnerServer error"+session,cause);			
+			innerCloselog.error("网关内部连接服务器出现错误："+session,cause);			
 		}
 
 		@Override
-		public void sessionClosed(IoSession session) {
-			innerCloselog.error("InnerServer"+session+"关闭");
+		public void sessionClosed(IoSession session) 
+		{
+			innerCloselog.error("网关内部连接服务器:["+session+"]关闭");
 			if (session.containsAttribute("server_id"))
 			{
 				int id = (Integer)session.getAttribute("server_id");

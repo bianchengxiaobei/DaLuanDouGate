@@ -21,6 +21,7 @@ import com.chen.login.message.res.ResLoginMessage;
 import com.chen.login.message.res.ResPlayerQuitMessage;
 import com.chen.login.message.res.ResSubstituteMessage;
 import com.chen.player.message.res.ResCreateRoleResultMessage;
+import com.chen.player.structs.EAuthType;
 import com.chen.player.structs.Player;
 import com.chen.player.structs.UserState;
 import com.chen.server.GateServer;
@@ -68,7 +69,7 @@ public class PlayerManager
 	 * @param userId
 	 * @param password
 	 */
-	public void login(IoSession session,int createServer,String userId,String password)
+	public void login(IoSession session,int createServer,String userId,String password,byte authType)
 	{
 		String ip = null;
 		try {
@@ -94,8 +95,8 @@ public class PlayerManager
 				user = dao.select(userId, createServer);
 				if (user != null)
 				{
-					//用户密码错误
-					if(!user.getPassword().equals(password))
+					//如果不是游客或者平台登录，用户密码错误
+					if(authType == EAuthType.Normal.value && !user.getPassword().equals(password))
 					{
 						ResLoginMessage msg = new ResLoginMessage();
 						msg.setErrorCode(2);
@@ -117,6 +118,10 @@ public class PlayerManager
 					user.setUsername(userId);
 					user.setServer(createServer);
 					user.setIsForbid(0);
+					if (authType != EAuthType.Normal.value)
+					{
+						password = "1";
+					}
 					user.setPassword(password);
 					dao.insert(user);
 					//插入数据库

@@ -13,6 +13,7 @@ public class ReqLoginMessage extends Message
 	private int serverId;
 	private String name;
 	private String password;
+	public byte authType;
 	@Override
 	public int getId() {
 		return 1001;
@@ -50,6 +51,7 @@ public class ReqLoginMessage extends Message
 		this.name = readString(buf);
 		this.password = readString(buf);
 		this.serverId = readInt(buf);
+		this.authType = readByte(buf);
 		return true;
 	}
 	@Override
@@ -57,6 +59,7 @@ public class ReqLoginMessage extends Message
 		writeString(buf, this.name);
 		writeString(buf, this.password);
 		writeInt(buf, this.serverId);
+		writeByte(buf, authType);
 		return true;
 	}
 }

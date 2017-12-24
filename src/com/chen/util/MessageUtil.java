@@ -129,6 +129,11 @@ public class MessageUtil
 			writeToPlayer(session, message);
 		}
 	}
+	/**
+	 * 发送给客户端
+	 * @param roleId
+	 * @param msg
+	 */
 	public static void tell_player_message(long roleId,TransfersMessage msg)
 	{
 		IoSession session = GateServer.getInstance().getSessionByRole(roleId);

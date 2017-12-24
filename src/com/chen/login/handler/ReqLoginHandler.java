@@ -16,7 +16,7 @@ public class ReqLoginHandler extends Handler
 		try {
 			ReqLoginMessage msg = (ReqLoginMessage)this.getMessage();
 			//登陆用户
-			PlayerManager.getInstance().login(msg.getSession(), msg.getServerId(), msg.getName(), msg.getPassword());
+			PlayerManager.getInstance().login(msg.getSession(), msg.getServerId(), msg.getName(), msg.getPassword(),msg.authType);
 		} catch (Exception e) {
 			log.error(e,e);
 		}
