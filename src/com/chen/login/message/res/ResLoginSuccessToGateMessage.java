@@ -1,8 +1,9 @@
 package com.chen.login.message.res;
 
+import java.nio.ByteBuffer;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
-import com.chen.login.bean.RoleAllInfo;
 import com.chen.message.Message;
 /**
  *游戏服务器通知网关服务器登陆成功消息 
@@ -15,6 +16,8 @@ public class ResLoginSuccessToGateMessage extends Message
 	private int createServerId;
 	private String userId;
 	private long playerId;
+	
+	
 	public int getServerId() {
 		return serverId;
 	}
@@ -65,22 +68,22 @@ public class ResLoginSuccessToGateMessage extends Message
 	}
 
 	@Override
-	public boolean read(IoBuffer buf) 
+	public void read(ByteBuffer buf) 
 	{
-		this.serverId = readInt(buf);
-		this.createServerId = readInt(buf);
-		this.userId = readString(buf);
-		this.playerId = readLong(buf);
-		return true;
+		super.read(buf);
+		this.serverId = readInt(this.messageUnpacker);
+		this.createServerId = readInt(this.messageUnpacker);
+		this.userId = readString(this.messageUnpacker);
+		this.playerId = readLong(this.messageUnpacker);
 	}
 
 	@Override
-	public boolean write(IoBuffer buf)
+	public void write(IoBuffer buf)
 	{
-		writeInt(buf, serverId);
-		writeInt(buf, createServerId);
-		writeString(buf, userId);
-		writeLong(buf, playerId);
-		return true;
+		writeInt(this.messagePack, serverId);
+		writeInt(this.messagePack, createServerId);
+		writeString(this.messagePack, userId);
+		writeLong(this.messagePack, playerId);
+		super.write(buf);
 	}
 }

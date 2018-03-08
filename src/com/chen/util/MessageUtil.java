@@ -1,6 +1,7 @@
 package com.chen.util;
 
 
+import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Stack;
@@ -23,6 +24,7 @@ public class MessageUtil
 	 * @param id
 	 * @param message
 	 * @return
+	 * @throws IOException 
 	 */
 	public static boolean sendMessageToGameServer(int server,int id,Message message)
 	{
@@ -44,6 +46,7 @@ public class MessageUtil
 	 * 发送消息到游戏服务器的缓存
 	 * @param session
 	 * @param message
+	 * @throws IOException 
 	 */
 	private static void writeToGame(IoSession session, Message message)
 	{
@@ -120,6 +123,7 @@ public class MessageUtil
 	 * 网关发送消息给客户端玩家
 	 * @param roleId
 	 * @param message
+	 * @throws IOException 
 	 */
 	public static void tell_player_message(long roleId,Message message)
 	{
@@ -143,13 +147,14 @@ public class MessageUtil
 		}
 		else
 		{
-			log.error("网关服务器没有注册角色Id："+roleId);
+			log.error("网关服务器没有注册角色Id："+roleId+",消息id："+msg.getId());
 		}
 	}
 	/**
 	 * 写入到游戏服务器缓存
 	 * @param session
 	 * @param message
+	 * @throws IOException 
 	 */
 	private static void writeToPlayer(IoSession session, Message message)
 	{
@@ -239,6 +244,7 @@ public class MessageUtil
 	 * @param server
 	 * @param id
 	 * @param message
+	 * @throws IOException 
 	 */
 	public static void send_to_game(int server,int id,Message message)
 	{

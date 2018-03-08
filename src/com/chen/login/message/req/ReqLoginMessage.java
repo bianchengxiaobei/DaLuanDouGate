@@ -1,5 +1,7 @@
 package com.chen.login.message.req;
 
+import java.nio.ByteBuffer;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 import com.chen.message.Message;
@@ -47,19 +49,16 @@ public class ReqLoginMessage extends Message
 		return null;
 	}
 	@Override
-	public boolean read(IoBuffer buf) {
-		this.name = readString(buf);
-		this.password = readString(buf);
-		this.serverId = readInt(buf);
-		this.authType = readByte(buf);
-		return true;
+	public void read(ByteBuffer buf) 
+	{
+		super.read(buf);
+		this.name = readString(this.messageUnpacker);
+		this.password = readString(this.messageUnpacker);
+		this.serverId = readInt(this.messageUnpacker);
+		this.authType = readByte(this.messageUnpacker);
 	}
 	@Override
-	public boolean write(IoBuffer buf) {
-		writeString(buf, this.name);
-		writeString(buf, this.password);
-		writeInt(buf, this.serverId);
-		writeByte(buf, authType);
-		return true;
+	public void write(IoBuffer buf) {
+		
 	}
 }

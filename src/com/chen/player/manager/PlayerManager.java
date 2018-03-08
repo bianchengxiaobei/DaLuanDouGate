@@ -9,8 +9,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.mina.core.session.IoSession;
 
 import com.chen.config.Config;
+import com.chen.db.bean.GameMaster;
 import com.chen.db.bean.Role;
 import com.chen.db.bean.User;
+import com.chen.db.dao.GameMasterDao;
 import com.chen.db.dao.RoleDao;
 import com.chen.db.dao.UserDao;
 import com.chen.login.bean.CharacterInfo;
@@ -46,7 +48,7 @@ public class PlayerManager
 	//第一层key=>服务器id，第二层key=>userid
 	private static ConcurrentHashMap<Integer, ConcurrentHashMap<String, Integer>> user_states = new ConcurrentHashMap<Integer, ConcurrentHashMap<String,Integer>>();
 	
-	public static int MAX_PLAYER = 4000;
+	public static int MAX_PLAYER = 1000;
 	private PlayerManager()
 	{
 		
@@ -211,6 +213,22 @@ public class PlayerManager
 			session.setAttribute("user_name", user.getUsername());
 			//注册当前玩家到网关服务器的User通信列表中
 			GateServer.getInstance().registerUser(session, createServer, userId, 0);
+			
+			//是否是GM
+			try
+			{
+				GameMasterDao masterDao = new GameMasterDao();
+				GameMaster master = masterDao.selectByUserId(user.getUserid());
+				if (master != null)
+				{
+					//发送gm的等级
+				}
+			} 
+			catch (Exception e)
+			{
+				
+			}
+			
 			//当前服务器是否有角色在线
 			ConcurrentHashMap<String, Player> players = user_players.get(createServer);
 			if (players != null)
@@ -235,7 +253,9 @@ public class PlayerManager
 			//如果玩家还没有角色
 			if (characters != null)
 			{
-				for (int i = 0; i < characters.size(); i++) {
+				int size = characters.size();
+				msg.characters = new CharacterInfo[size];
+				for (int i = 0; i < size; i++) {
 					Role role = characters.get(i);
 					CharacterInfo info = new CharacterInfo();
 					info.name = role.getName();
@@ -243,7 +263,7 @@ public class PlayerManager
 					info.level = role.getLevel();
 					info.icon = role.getIcon();
 					info.sex = (byte) (int) role.getSex();
-					msg.getCharacters().add(info);
+					msg.characters[i] = info;
 				}
 			}	
 			//发送角色列表给客户端，如果发送是空的话，客户端判断然后创建角色
@@ -396,8 +416,6 @@ public class PlayerManager
 			RoleDao roleDao = new RoleDao();
 			try {
 				Role character = roleDao.selectById(playerId);
-				System.out.println("hh:"+playerId);
-				System.out.println("tt:"+character.getCreateServer());
 				server = character.getCreateServer();
 			} catch (Exception e) {
 				log.error(e,e);
@@ -477,7 +495,7 @@ public class PlayerManager
 	 * @param userId
 	 * @return 成功该状态所在的索引，失败为0
 	 */
-	private int removeUserState(int server, String userId)
+	public int removeUserState(int server, String userId)
 	{
 		if (user_states.containsKey(server))
 		{

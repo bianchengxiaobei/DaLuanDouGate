@@ -1,5 +1,7 @@
 package com.chen.player.message.res;
 
+import java.nio.ByteBuffer;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 import com.chen.message.Message;
@@ -30,17 +32,17 @@ public class ResCreateRoleResultMessage extends Message
 	}
 
 	@Override
-	public boolean read(IoBuffer buffer) 
+	public void read(ByteBuffer buffer) 
 	{
-		this.errCode = readInt(buffer);
-		return true;
+		super.read(buffer);
+		this.errCode = readInt(this.messageUnpacker);		
 	}
 
 	@Override
-	public boolean write(IoBuffer buffer) 
+	public void write(IoBuffer buffer) 
 	{
-		writeInt(buffer, errCode);
-		return true;
+		writeInt(this.messagePack, errCode);
+		super.write(buffer);
 	}
 	
 }

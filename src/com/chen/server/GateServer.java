@@ -230,9 +230,9 @@ public class GateServer extends MinaServer
 				log.debug("客户端："+session+"收到登陆消息，时间为："+System.currentTimeMillis());
 			}
 			//还没有登录就通信
-			if (id != 1001 && id != 0 && !session.containsAttribute("user_id"))
+			if (id != 1001 && id != 1045 && id != 0 && !session.containsAttribute("user_id"))
 			{
-				SessionUtil.closeSession(session, "没有发送登陆消息");
+				SessionUtil.closeSession(session, "没有发送登陆消息:"+id);
 				return;
 			}
 			//设置前一条消息的id
@@ -478,7 +478,7 @@ public class GateServer extends MinaServer
 						return;
 					}
 					//log.debug("收到消息id："+msg.getId()+"-->"+msg.getClass().getSimpleName());
-					msg.read(buf);
+					msg.read(buf.buf());
 					msg.setSession(session);
 					handler.setMessage(msg);
 					handler.setCreateTime(System.currentTimeMillis());
@@ -490,7 +490,7 @@ public class GateServer extends MinaServer
 					Object roleId = session.getAttribute("player_id");
 					if (roleId == null)
 					{
-						log.error("客户端session:"+session+"，服务器里面还没有绑定角色");
+						log.error("客户端session:"+session+"，服务器里面还没有绑定角色:"+id);
 						return ;
 					}
 					long playerId = (Long)roleId;
@@ -566,7 +566,7 @@ public class GateServer extends MinaServer
 					{
 						return;
 					}
-					msg.read(buf);
+					msg.read(buf.buf());
 					msg.setSession(session);
 					handler.setMessage(msg);
 					actionExecutor.execute(handler);

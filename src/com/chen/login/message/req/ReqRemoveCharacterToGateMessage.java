@@ -1,5 +1,7 @@
 package com.chen.login.message.req;
 
+import java.nio.ByteBuffer;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 import com.chen.message.Message;
@@ -26,17 +28,16 @@ public class ReqRemoveCharacterToGateMessage extends Message
 	}
 
 	@Override
-	public boolean read(IoBuffer buffer)
+	public void read(ByteBuffer buffer)
 	{
-		this.playerId = readLong(buffer);
-		return true;
+		super.read(buffer);
+		this.playerId = readLong(this.messageUnpacker);
 	}
 
 	@Override
-	public boolean write(IoBuffer buffer) 
+	public void write(IoBuffer buffer) 
 	{
-		// TODO Auto-generated method stub
-		return true;
+		
 	}
 
 }

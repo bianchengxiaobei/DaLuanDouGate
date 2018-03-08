@@ -1,6 +1,7 @@
 package com.chen.login.bean;
 
-import org.apache.mina.core.buffer.IoBuffer;
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessageUnpacker;
 
 import com.chen.message.Bean;
 
@@ -12,21 +13,21 @@ public class CharacterInfo extends Bean
 	public byte sex;
 	public int icon;
 	@Override
-	public boolean read(IoBuffer buf) {
-		this.playerId = readLong(buf);
-		this.name = readString(buf);
-		this.level = readInt(buf);
-		this.sex = readByte(buf);
-		this.icon = readInt(buf);
-		return true;
+	public void read(MessageUnpacker messageUnpacker)
+	{
+		this.playerId = readLong(messageUnpacker);
+		this.name = readString(messageUnpacker);
+		this.level = readInt(messageUnpacker);
+		this.sex = readByte(messageUnpacker);
+		this.icon = readInt(messageUnpacker);		
 	}
 	@Override
-	public boolean write(IoBuffer buf) {
-		writeLong(buf, playerId);
-		writeString(buf, name);
-		writeInt(buf, level);
-		writeByte(buf, sex);
-		writeInt(buf, icon);
-		return true;
+	public void write(MessageBufferPacker messagePack)
+	{
+		writeLong(messagePack, playerId);
+		writeString(messagePack, name);
+		writeInt(messagePack, level);
+		writeByte(messagePack, sex);
+		writeInt(messagePack, icon);
 	}
 }

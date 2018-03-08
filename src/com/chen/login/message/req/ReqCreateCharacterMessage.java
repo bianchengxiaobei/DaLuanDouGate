@@ -1,5 +1,7 @@
 package com.chen.login.message.req;
 
+import java.nio.ByteBuffer;
+
 import org.apache.mina.core.buffer.IoBuffer;
 
 import com.chen.message.Message;
@@ -30,17 +32,20 @@ public class ReqCreateCharacterMessage extends Message
 		return null;
 	}
 	@Override
-	public boolean read(IoBuffer buf) {
-		this.name = readString(buf);
-		this.icon = readInt(buf);
-		this.sex = readByte(buf);
-		return true;
+	public void read(ByteBuffer buf) 
+	{
+		super.read(buf);
+		this.name = readString(this.messageUnpacker);
+		this.icon = readInt(this.messageUnpacker);
+		this.sex = readByte(this.messageUnpacker);
+		readEnd();
 	}
 	@Override
-	public boolean write(IoBuffer buf) {
-		writeString(buf, name);
-		writeInt(buf, icon);
-		writeByte(buf,this.sex);
-		return true;
+	public void write(IoBuffer buf) 
+	{
+		writeString(this.messagePack, name);
+		writeInt(this.messagePack, icon);
+		writeByte(this.messagePack, this.sex);
+		write(buf);
 	}
 }

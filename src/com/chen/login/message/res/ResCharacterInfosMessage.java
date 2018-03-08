@@ -1,10 +1,11 @@
 package com.chen.login.message.res;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.ByteBuffer;
 
 
 import org.apache.mina.core.buffer.IoBuffer;
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessagePack;
 
 import com.chen.login.bean.CharacterInfo;
 import com.chen.message.Message;
@@ -16,21 +17,12 @@ import com.chen.message.Message;
  */
 public class ResCharacterInfosMessage extends Message
 {
-	private List<CharacterInfo> characters = new ArrayList<CharacterInfo>();
+	public CharacterInfo[] characters;
 	@Override
 	public int getId() {
 		// TODO Auto-generated method stub
 		return 1003;
 	}
-
-	public List<CharacterInfo> getCharacters() {
-		return characters;
-	}
-
-	public void setCharacters(List<CharacterInfo> characters) {
-		this.characters = characters;
-	}
-
 	@Override
 	public String getQueue() {
 		// TODO Auto-generated method stub
@@ -44,23 +36,21 @@ public class ResCharacterInfosMessage extends Message
 	}
 
 	@Override
-	public boolean read(IoBuffer buf) {
-		int characters_length = readInt(buf);
-		for (int i=0;i<characters_length;i++)
-		{
-			characters.add((CharacterInfo)readBean(buf, CharacterInfo.class));
-		}
-		return true;
+	public void read(ByteBuffer buf)
+	{
+		super.read(buf);
 	}
 
 	@Override
-	public boolean write(IoBuffer buf) {
-		writeInt(buf, characters.size());
-		for (int i=0;i<characters.size();i++)
+	public void write(IoBuffer buf)
+	{
+		int length = characters.length;
+		writeInt(this.messagePack, length);
+		for (int i=0;i<length;i++)
 		{
-			writeBean(buf, characters.get(i));
+			characters[i].write(this.messagePack);;
 		}
-		return true;
+		super.write(buf);	
 	}
 
 }
